@@ -1,0 +1,433 @@
+{
+  "Uuid": "967f0984-6b4d-42a4-bada-2806a0840556",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "project_v1",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# The inputs to this node will be stored as a list in the IN variables.\r\ndata = IN[0]\r\nwidth = data[3]\r\nheight = data[5]\r\nspan = data[7]\r\nl = []\r\n\r\ndef round_to_multiple(number, multiple):\r\n    return multiple * round(number / multiple)\r\n    \r\nd = height/1.732 # d = height/tan(60)\r\nts = round_to_multiple((span - 2*d),2*d) # top span (adjusted as per the height in order to maintain equilateral triangles)\r\n\r\np1 = Point.ByCoordinates(-span/2,-width/2,0) #end 1 bottom\r\np2 = Point.ByCoordinates(-span/2,width/2,0) #end 1 bottom\r\np3 = Point.ByCoordinates(span/2,-width/2,0) #end 2 bottom\r\np4 = Point.ByCoordinates(span/2,width/2,0) #end 2 bottom\r\n\r\n\r\np5 = Point.ByCoordinates(-ts/2,-width/2,height) #end 1 top\r\np6 = Point.ByCoordinates(-ts/2,width/2,height) #end 1 top\r\np7 = Point.ByCoordinates(ts/2,-width/2,height) #end 2 top\r\np8 = Point.ByCoordinates(ts/2,width/2,height) #end 2 top\r\n#connecting bottom lines\r\nl.append(Line.ByStartPointEndPoint(p1,p3))\r\nl.append(Line.ByStartPointEndPoint(p2,p4))\r\nl.append(Line.ByStartPointEndPoint(p1,p2))\r\nl.append(Line.ByStartPointEndPoint(p3,p4))\r\n\r\n\r\nfor i in range(0,int(ts/(2*d))):\r\n    p_top1 = Point.ByCoordinates(-ts/2+i*2*d,-width/2,height)\r\n    p_bot1 = Point.ByCoordinates(-ts/2+(i*2+1)*d,-width/2,0)\r\n    l.append(Line.ByStartPointEndPoint(p_top1, p_bot1))\r\n    p_top2 = Point.ByCoordinates(-ts/2+i*2*d,width/2,height)\r\n    p_bot2 = Point.ByCoordinates(-ts/2+(i*2+1)*d,width/2,0)\r\n    l.append(Line.ByStartPointEndPoint(p_top2, p_bot2))\r\n    l.append(Line.ByStartPointEndPoint(p_top2, p_top1))\r\n    l.append(Line.ByStartPointEndPoint(p_bot1, p_bot2))\r\n\r\nfor i in range(1,int(ts/(2*d))+1):\r\n    p_top1 = Point.ByCoordinates(-ts/2+i*2*d,-width/2,height)\r\n    p_bot1 = Point.ByCoordinates(-ts/2+(i*2-1)*d,-width/2,0)\r\n    l.append(Line.ByStartPointEndPoint(p_top1, p_bot1))\r\n    p_top2 = Point.ByCoordinates(-ts/2+i*2*d,width/2,height)\r\n    p_bot2 = Point.ByCoordinates(-ts/2+(i*2-1)*d,width/2,0)\r\n    l.append(Line.ByStartPointEndPoint(p_top2, p_bot2))\r\n    l.append(Line.ByStartPointEndPoint(p_top2, p_top1))\r\n    l.append(Line.ByStartPointEndPoint(p_bot1, p_bot2))\r\n\r\n#connecting top lines\r\nl.append(Line.ByStartPointEndPoint(p5,p7))\r\nl.append(Line.ByStartPointEndPoint(p6,p8))\r\nl.append(Line.ByStartPointEndPoint(p5,p6))\r\nl.append(Line.ByStartPointEndPoint(p7,p8))\r\n#connecting top and bottom ends\r\nl.append(Line.ByStartPointEndPoint(p1,p5))\r\nl.append(Line.ByStartPointEndPoint(p2,p6))\r\nl.append(Line.ByStartPointEndPoint(p3,p7))\r\nl.append(Line.ByStartPointEndPoint(p4,p8))\r\n\r\n# Assign your output to the OUT variable.\r\nOUT = l",
+      "Engine": "CPython3",
+      "EngineName": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "0cac4c3aa4574679b6874ef92c104334",
+      "Inputs": [
+        {
+          "Id": "278f2a67cc464970baa3874d8aa10411",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "54aca49be1af46efbc91a8284714713d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.Filename, CoreNodeModels",
+      "HintPath": "C:\\Users\\mvk18\\Desktop\\testing.xlsx",
+      "InputValue": ".\\testing.xlsx",
+      "NodeType": "ExtensionNode",
+      "Id": "f825cd8ba7c94daeb33b972c372886bb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0a44b7c3afd441679f74ec095cd69631",
+          "Name": "",
+          "Description": "File Path",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows you to select a file on the system to get its file path."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "b80bd71ac4b34543a6fc980eeebbc90b",
+      "Inputs": [
+        {
+          "Id": "7a7f6384d338431aad8b9297bf904ad5",
+          "Name": "",
+          "Description": "Node to show output from",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7206779f6d654dd988b4fca431f6e5a2",
+          "Name": "",
+          "Description": "Node output",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize the node's output"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "\"Sheet1\";\nfalse;",
+      "Id": "f74dde35599d40ff9090c606d8251833",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ea811c5e0ac94706986eb5d4e6413375",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "08efe9dc84e44398b299013905c2e81f",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ImportExcel@var,string,bool,bool",
+      "Id": "fb3bb82c479f4f9e8ea2d6a736be670c",
+      "Inputs": [
+        {
+          "Id": "2d280a2d661745fe9a627c6421545bb6",
+          "Name": "file",
+          "Description": "File representing the Excel workbook\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e6193062645a4d4b82ed20d1aaac90d0",
+          "Name": "sheetName",
+          "Description": "Name of the worksheet containing data\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9e458fca4952412c855ee2d8308ad29c",
+          "Name": "readAsStrings",
+          "Description": "Toggle to read cells as strings\n\nbool\nDefault value : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dab7197967974eadb733737f76b68ef7",
+          "Name": "showExcel",
+          "Description": "Toggle to show excel's main window\n\nbool\nDefault value : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8e6a7e47da95441d869633d1d3f4ff53",
+          "Name": "data",
+          "Description": "Rows of data from the Excel worksheet",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Read data from a Microsoft Excel spreadsheet. Data is read by row and returned in a series of lists by row. Rows and columns are zero-indexed; for example, the value in cell A1 will appear in the data list at [0,0]. This node requires Microsoft Excel to be installed.\n\nData.ImportExcel (file: var, sheetName: string, readAsStrings: bool = false, showExcel: bool = true): var[][]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.FileObject, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "1a5cdeafebb14ca4ab0108ed7e29e3f9",
+      "Inputs": [
+        {
+          "Id": "44c2ba257ba94e13b4db7ada52de2dfe",
+          "Name": "path",
+          "Description": "Path to the file.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c3996b6f6a1a4a69bffb885244124b29",
+          "Name": "file",
+          "Description": "File object",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Creates a file object from a path."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Flatten@var[]..[],int",
+      "Id": "52ac9d5e797345ecab64f07560bbd0f5",
+      "Inputs": [
+        {
+          "Id": "05deee7ea4b64ee1bc42fdbe1e05a299",
+          "Name": "list",
+          "Description": "List to flatten.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fb42e7b40ad34dd4a203ea5af514358c",
+          "Name": "amount",
+          "Description": "Layers of list nesting to remove (-1 will remove all list nestings)\n\nint\nDefault value : -1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b7975011912b4dfe9784f856625b0d89",
+          "Name": "list",
+          "Description": "Flattened list by amount",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Flattens a nested list of lists by a certain amount.\n\nList.Flatten (list: var[]..[], amount: int = -1): var[]..[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "0a44b7c3afd441679f74ec095cd69631",
+      "End": "44c2ba257ba94e13b4db7ada52de2dfe",
+      "Id": "b3d2ab029968438b9c0ad3ae8584013f",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "7206779f6d654dd988b4fca431f6e5a2",
+      "End": "278f2a67cc464970baa3874d8aa10411",
+      "Id": "7db9656e1a5e44eaa93244fe573151a3",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "ea811c5e0ac94706986eb5d4e6413375",
+      "End": "e6193062645a4d4b82ed20d1aaac90d0",
+      "Id": "8ca3f6c763fd42559a619dc94dbd7b4e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "08efe9dc84e44398b299013905c2e81f",
+      "End": "9e458fca4952412c855ee2d8308ad29c",
+      "Id": "d447fa9dce7a4cba8ddafb97713c36c2",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "08efe9dc84e44398b299013905c2e81f",
+      "End": "dab7197967974eadb733737f76b68ef7",
+      "Id": "bbcae33280274631a1197b9489caf48a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "8e6a7e47da95441d869633d1d3f4ff53",
+      "End": "05deee7ea4b64ee1bc42fdbe1e05a299",
+      "Id": "848414fd97a347a2b3ac63aaed049da1",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "c3996b6f6a1a4a69bffb885244124b29",
+      "End": "2d280a2d661745fe9a627c6421545bb6",
+      "Id": "7a53c254890248c49ac33a1c3fa8b642",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "b7975011912b4dfe9784f856625b0d89",
+      "End": "7a7f6384d338431aad8b9297bf904ad5",
+      "Id": "6743509045164b78b27374611867434d",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "testing.xlsx",
+      "ReferenceType": "External",
+      "Nodes": [
+        "f825cd8ba7c94daeb33b972c372886bb"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.12",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "2.0",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.15.2.6417",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": 104.30377197265625,
+      "EyeY": 88.510307312011719,
+      "EyeZ": 155.15840148925781,
+      "LookX": -104.30377197265625,
+      "LookY": -78.510307312011719,
+      "LookZ": -155.15840148925781,
+      "UpX": -0.10071112215518951,
+      "UpY": 0.98357164859771729,
+      "UpZ": -0.14981350302696228
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Magic ",
+        "ShowGeometry": true,
+        "Id": "0cac4c3aa4574679b6874ef92c104334",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1595.4471976493721,
+        "Y": -88.676117969712891
+      },
+      {
+        "Name": "File Path",
+        "ShowGeometry": true,
+        "Id": "f825cd8ba7c94daeb33b972c372886bb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 156.57954025274927,
+        "Y": 129.94712868718449
+      },
+      {
+        "Name": "Watch",
+        "ShowGeometry": true,
+        "Id": "b80bd71ac4b34543a6fc980eeebbc90b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1065.3111784284765,
+        "Y": -131.0549197289381
+      },
+      {
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Id": "f74dde35599d40ff9090c606d8251833",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 238.31673456614226,
+        "Y": 281.38039457577923
+      },
+      {
+        "Name": "Data.ImportExcel",
+        "ShowGeometry": true,
+        "Id": "fb3bb82c479f4f9e8ea2d6a736be670c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 478.38335245041662,
+        "Y": -84.524782184465437
+      },
+      {
+        "Name": "File From Path",
+        "ShowGeometry": true,
+        "Id": "1a5cdeafebb14ca4ab0108ed7e29e3f9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 201.21065174405794,
+        "Y": -51.0892843317381
+      },
+      {
+        "Name": "List.Flatten",
+        "ShowGeometry": true,
+        "Id": "52ac9d5e797345ecab64f07560bbd0f5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 735.89964165287086,
+        "Y": 9.1488752631357215
+      }
+    ],
+    "Annotations": [],
+    "X": 0.5970733455901609,
+    "Y": 228.99695528529273,
+    "Zoom": 0.63558596426988123
+  }
+}
