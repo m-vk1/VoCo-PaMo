@@ -45,3 +45,9 @@ If the user's voice command is understood by the app, an audio message stating t
 If the app fails to understand the user's voice command, the following screen is shown.
 
 ![image](https://user-images.githubusercontent.com/119511990/222205387-0cda04f2-1126-4b3f-9e63-aa9326c70c3b.png)
+
+---
+
+# Demonstration video
+
+https://user-images.githubusercontent.com/119511990/223112367-48db5ae0-0ee1-4ac9-99d0-cfdc491e0b7b.mp4
